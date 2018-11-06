@@ -1,0 +1,3 @@
+{
+  "tests/test_ipmi.py::test_ipmi_lan_req_msg_get_netFn": true
+}

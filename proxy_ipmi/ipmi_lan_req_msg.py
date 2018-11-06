@@ -11,15 +11,31 @@ class IPMILanRequestMessage():
         self.iv = self.extract_iv()
         self.uncipherded_payload = self.decrypt_msg()
         self.rsAddr = self.extract_rsAddr()
-        self.netFn_lun  = self.extract_netFn_lun()
-        self.checksum_rsAdd_netFn_lun = self.extract_checksum_rsAdd_netFn_lun()
-        self.validate_checksum_rsAdd_netFn_lun()
+        self.netFn_rslun  = self.extract_netFn_rslun()
+        self.checksum_rsAdd_netFn_lun = self.extract_checksum_rsAdd_netFn_rsLun()
+        self.validate_checksum_rsAdd_netFn_rsLun()
+        self.rqAddr = self.extract_rqAddr()
+        self.rqSeq_rqLun  = self.extract_rqSeq_rqlun()
+        self.command = self.extract_command()
+        self.command_data = self.extract_command_data()
+        self.checksum_two = self.extract_checksum_two()
+        self.validate_checksum_two()
 
     def decrypt_msg(self):
         print("ipmi_ciphered_payload : " + str(self.ciphered_msg[32:]))
         aes = AES.new(bytes.fromhex(str(self.ipmi_k2_short_key)[2:-1]), AES.MODE_CBC, bytes.fromhex(str(self.iv)[2:-1]))
         decrypted_msg = aes.decrypt(bytes.fromhex(str(self.ciphered_msg)[34:-1])).hex()
-        return decrypted_msg
+        return IPMILanRequestMessage.unpad_decrypted_msg(decrypted_msg)
+
+    @staticmethod
+    def unpad_decrypted_msg(message):
+        last_two_chars = message[-2:]
+        previous_last_two_chars = message[-4:-2]
+
+        if last_two_chars == previous_last_two_chars:
+            message = message[:len(message) - (int(last_two_chars)+1)*2]
+
+        return message
 
     def extract_ipmi_k2_short_key(self):
         k2_short_key = self.ipmi_k2_key[0:32]
@@ -29,35 +45,67 @@ class IPMILanRequestMessage():
     def extract_rsAddr(self):
         return self.uncipherded_payload[0:2]
 
-    def extract_netFn_lun(self):
+    def extract_rqAddr(self):
+        return self.uncipherded_payload[6:8]
+
+    def extract_netFn_rslun(self):
         netFn_lun = self.uncipherded_payload[2:4]
         return netFn_lun
 
+    def extract_rqSeq_rqlun(self):
+        rqSeq_rqlun = self.uncipherded_payload[8:10]
+        return rqSeq_rqlun
+
     def extract_netFn(self):
-        netFn = IPMILanRequestMessage.get_bits(self.netFn_lun)[2:]
+        netFn = IPMILanRequestMessage.get_bits(self.netFn_rslun)[2:]
         netFn.reverse
         return "".join(netFn)
 
-    def extract_lun(self):
-        lun = IPMILanRequestMessage.get_bits(self.netFn_lun)[0:2]
+    def extract_rsLun(self):
+        lun = IPMILanRequestMessage.get_bits(self.netFn_rslun)[0:2]
         lun.reverse
         return "".join(lun)
+
+    def extract_rqSeq(self):
+        rqSeq = IPMILanRequestMessage.get_bits(self.rqSeq_rqLun)[2:]
+        rqSeq.reverse
+        return "".join(rqSeq)
+
+    def extract_rqLun(self):
+        rqLun = IPMILanRequestMessage.get_bits(self.rqSeq_rqLun)[0:2]
+        rqLun.reverse
+        return "".join(rqLun)
+
 
     def extract_iv(self):
         print("ipmi_iv : " + str(self.ciphered_msg[0:32]))
         return self.ciphered_msg[0:32]
 
-    def extract_checksum_rsAdd_netFn_lun(self):
+    def extract_checksum_rsAdd_netFn_rsLun(self):
         return self.uncipherded_payload[4:6]
 
 
-    def validate_checksum_rsAdd_netFn_lun(self):
-        bytes_to_check = self.rsAddr + self.netFn_lun
+    def validate_checksum_rsAdd_netFn_rsLun(self):
+        bytes_to_check = self.rsAddr + self.netFn_rslun
         calculated_checksum = IPMILanRequestMessage.two_complement_checksum(bytes_to_check)
-        print("calculated_checksum" + str(calculated_checksum))
         if calculated_checksum != self.checksum_rsAdd_netFn_lun:
             raise AssertionError()
 
+    def extract_command(self):
+        return self.uncipherded_payload[10:12]
+
+    def extract_command_data(self):
+        return self.uncipherded_payload[12:-2]
+           
+    def extract_checksum_two(self):
+        return self.uncipherded_payload[-2:]
+
+    def validate_checksum_two(self):
+        bytes_to_check = self.rqAddr + self.rqSeq_rqLun + self.command + self.command_data
+        calculated_checksum = IPMILanRequestMessage.two_complement_checksum(bytes_to_check)
+        if calculated_checksum != self.checksum_two:
+            raise AssertionError()
+    
 
     @staticmethod
     def get_bits(hex_byte):

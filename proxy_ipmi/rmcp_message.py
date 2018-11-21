@@ -16,8 +16,15 @@ class RMCPMessage():
             self.rcmp_reserved = self.extract_rcmp_reserved(keys['rcmp_reserved'])
             self.rcmp_sequence = self.extract_rcmp_sequence(keys['rcmp_sequence'])
             self.rcmp_message_type = self.extract_rcmp_message_type(keys['rcmp_message_type'])
-            self.rcmp_message_content = self.extract_rcmp_message_content(keys['data'])
+            self.rcmp_message_content = self.extract_rcmp_message_content(keys['rcmp_message_content'])
 
+    def __repr__(self):
+        return "------- RCMPMessage -------" \
+                + "\nrcmp_version : " + self.rcmp_version \
+                + "\nrcmp_reserved : " + self.rcmp_reserved \
+                + "\nrcmp_sequence : " + self.rcmp_sequence \
+                + "\nrcmp_message_type : " + self.rcmp_message_type \
+                + "\nmessage_content : " + self.message_content
 
     @staticmethod
     def extract_rcmp_version(data):
@@ -38,3 +45,6 @@ class RMCPMessage():
     @staticmethod
     def extract_rcmp_message_content(data):
         return data[8:]
+
+    def serialize(self)
+        return self.rcmp_version + self.rcmp_reserved + self.rcmp_sequence + self.rcmp_message_type + self.message_content

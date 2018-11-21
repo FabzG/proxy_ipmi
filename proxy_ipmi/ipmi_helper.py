@@ -144,6 +144,7 @@ class IPMIHelper():
         bits_list_value.reverse()
 
         first_byte_bin = "".join(bits_list_value)
+
         return first_byte_bin
 
     @staticmethod
@@ -198,9 +199,12 @@ class IPMIHelper():
 
         first_byte_checksum = IPMIHelper.get_first_byte(bin(checksum))
 
-        checksum_two_complement = hex(int(first_byte_checksum, 2))
+        checksum_two_complement = hex(int(first_byte_checksum, 2))[2:]
 
-        return checksum_two_complement[2:]
+        if len(checksum_two_complement) < 2:
+            checksum_two_complement = '0'+checksum_two_complement
+
+        return checksum_two_complement
 
     @staticmethod
     def invert_hex(hex_val):

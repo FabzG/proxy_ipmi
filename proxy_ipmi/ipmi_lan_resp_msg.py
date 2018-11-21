@@ -1,5 +1,4 @@
 from Crypto.Cipher import AES
-#from ipmi_lan_msg import IPMILanMessage
 from ipmi_helper import IPMIHelper
 import math
 from hashlib import sha1
@@ -101,22 +100,22 @@ class IPMILanResponseMessage():
         return rqSeq_rqlun
 
     def extract_netFn(self):
-        netFn = IPMILanResponseMessage.get_bits(self.netFn_rqlun)[2:]
+        netFn = IPMIHelper.get_bits(self.netFn_rqlun)[2:]
         netFn.reverse
         return "".join(netFn)
 
     def extract_rqLun(self):
-        lun = IPMILanResponseMessage.get_bits(self.netFn_rqlun)[0:2]
+        lun = IPMIHelper.get_bits(self.netFn_rqlun)[0:2]
         lun.reverse
         return "".join(lun)
 
     def extract_rqSeq(self):
-        rqSeq = IPMILanResponseMessage.get_bits(self.rqSeq_rsLun)[2:]
+        rqSeq = IPMIHelper.get_bits(self.rqSeq_rsLun)[2:]
         rqSeq.reverse
         return "".join(rqSeq)
 
     def extract_rsLun(self):
-        rqLun = IPMILanResponseMessage.get_bits(self.rqSeq_rsLun)[0:2]
+        rqLun = IPMIHelper.get_bits(self.rqSeq_rsLun)[0:2]
         rqLun.reverse
         return "".join(rqLun)
 
@@ -129,7 +128,7 @@ class IPMILanResponseMessage():
 
     def validate_checksum_one(self):
         bytes_to_check = self.rqAddr + self.netFn_rqlun
-        calculated_checksum = IPMILanResponseMessage.two_complement_checksum(bytes_to_check)
+        calculated_checksum = IPMIHelper.two_complement_checksum(bytes_to_check)
         if calculated_checksum != self.checksum_one:
             raise AssertionError()
             #print("WRONG CHECKSUM !! calc : " + calculated_checksum)
@@ -148,7 +147,7 @@ class IPMILanResponseMessage():
 
     def validate_checksum_two(self):
         bytes_to_check = self.rsAddr + self.rqSeq_rsLun + self.command + self.completion_code + self.response_data
-        calculated_checksum = IPMILanResponseMessage.two_complement_checksum(bytes_to_check)
+        calculated_checksum = IPMIHelper.two_complement_checksum(bytes_to_check)
         if calculated_checksum != self.checksum_two:
             raise AssertionError()
             #print("WRONG CHECKSUM !! calc : " + calculated_checksum)

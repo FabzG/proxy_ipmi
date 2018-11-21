@@ -63,35 +63,6 @@ class PayloadRAKPMessage4():
     def extract_integrity_check_value(data):
         return data[16:]
 
-    @staticmethod
-    def get_rcmp_status_code_definition(hex_val):
-        maximum_privileges = {
-            '00' :'No errors',
-            '01' : 'Insufficient resources to create a session',
-            '02' : 'Invalid session ID',
-            '03' : 'Invalid payload type',
-            '04' : 'Invalid authentication algorithm',
-            '05' : 'Invalid integrity algorithm',
-            '06' : 'No matching authentication payload',
-            '07' : 'No matching integrity payload',
-            '08' : 'Inactive session id',
-            '09' : 'Invalid role',
-            '0a' : 'Unauthorized role or privilege level requested',
-            '0b' : 'Insufficient resources to create a session at the requested role',
-            '0c' : 'Invalid name length',
-            '0d' : 'Unauthorized name',
-            '0e' : 'Unauthorized GUID',
-            '0f' : 'Invalid integrity check value',
-            '10' : 'Invalid confidentiality algorithm',
-            '11' : 'No Cipher suite match with proposed security algorithm',
-            '12' : 'Illegal or unrecognized parameter'
-        }
-
-        try:
-            return maximum_privileges[hex_val]
-        except:
-            return "Reserved for future definition"
-
     def calc_integrity_check_value(self):
         if self.RCMP_auth_algorithm == 'RAKP-HMAC-SHA1':
             #test = self.RAKP_message_1_remote_console_random_number + self.RAKP_message_1_managed_system_session_id + self.RAKP_message_2_managed_system_GUID

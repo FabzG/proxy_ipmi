@@ -81,16 +81,6 @@ class IPMILanResponseMessage():
 
         return hmac_sik.digest().hex()
 
-    @staticmethod
-    def unpad_decrypted_msg(message):
-        last_two_chars = message[-2:]
-        previous_last_two_chars = message[-4:-2]
-
-        if last_two_chars == previous_last_two_chars:
-            message = message[:len(message) - (int(last_two_chars)+1)*2]
-
-        return message
-
     def extract_ipmi_k2_short_key(self):
         k2_short_key = self.ipmi_k2_key[0:32]
         print("ipmi_k2_short_key : " + str(k2_short_key))

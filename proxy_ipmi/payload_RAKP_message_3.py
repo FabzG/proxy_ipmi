@@ -44,32 +44,3 @@ class PayloadRAKPMessage3():
     @staticmethod
     def extract_key_exchange_auth_code(data):
         return data[16:]
-
-    @staticmethod
-    def get_rcmp_status_code_definition(hex_val):
-        maximum_privileges = {
-            '00' :'No errors',
-            '01' : 'Insufficient resources to create a session',
-            '02' : 'Invalid session ID',
-            '03' : 'Invalid payload type',
-            '04' : 'Invalid authentication algorithm',
-            '05' : 'Invalid integrity algorithm',
-            '06' : 'No matching authentication payload',
-            '07' : 'No matching integrity payload',
-            '08' : 'Inactive session id',
-            '09' : 'Invalid role',
-            '0a' : 'Unauthorized role or privilege level requested',
-            '0b' : 'Insufficient resources to create a session at the requested role',
-            '0c' : 'Invalid name length',
-            '0d' : 'Unauthorized name',
-            '0e' : 'Unauthorized GUID',
-            '0f' : 'Invalid integrity check value',
-            '10' : 'Invalid confidentiality algorithm',
-            '11' : 'No Cipher suite match with proposed security algorithm',
-            '12' : 'Illegal or unrecognized parameter'
-        }
-
-        try:
-            return maximum_privileges[hex_val]
-        except:
-            return "Reserved for future definition"

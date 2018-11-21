@@ -80,27 +80,3 @@ class PayloadRAKPMessage1():
         max_privilege_level_bits = bits[0:3]
         return "".join(max_privilege_level_bits[::-1])
 
-    @staticmethod
-    def get_requested_max_privilege_level_definition(bits_string_val):
-        int_val = int(bits_string_val, 2)
-
-        if int_val == 0:
-            return "reserved"
-        elif int_val == 1:
-            return "CALLBACK level"
-        elif int_val == 2:
-            return "USER level"
-        elif int_val == 3:
-            return "OPERATOR level"
-        elif int_val == 4:
-            return "ADMINISTRATOR level"
-        elif int_val == 5:
-            return "OEM Proprietary level"
-        else:
-            raise AttributeError('Unknown requested_max_privilege_level_definition')
-
-    @staticmethod
-    def get_username_human_readable(hex_val):
-        str_val = bytes.fromhex(hex_val).decode("utf8")
-
-        return str_val

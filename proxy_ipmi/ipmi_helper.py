@@ -1,5 +1,6 @@
 import math
 import random
+import uuid
 
 class IPMIHelper():
 
@@ -224,3 +225,152 @@ class IPMIHelper():
             hex_random = '0'*(32 - len(hex_random)) + hex_random
 
         return hex_random
+
+    @staticmethod
+    def unpad_ipmi_lan_decrypted_msg(message):
+        last_two_chars = message[-2:]
+        previous_last_two_chars = message[-4:-2]
+
+        if last_two_chars == previous_last_two_chars:
+            message = message[:len(message) - (int(last_two_chars)+1)*2]
+
+        return message
+
+
+    @staticmethod
+    def get_requested_maximum_privilege_definition(hex_val):
+        maximum_privileges = {
+            '00' :'Highest level matching proposed algorithms',
+            '01' : 'CALLBACK level',
+            '02' : 'USER level',
+            '03' : 'OPERATOR level',
+            '04' : 'ADMINISTRATOR level',
+            '05' : 'OEM Proprietary level'
+        }
+
+        try:
+            return maximum_privileges[hex_val]
+        except:
+            return "Unkown level"
+
+    @staticmethod
+    def get_auth_algorithm_definition(bits_string_val):
+        int_val = int(bits_string_val, 2)
+
+        if int_val == 0:
+            return "RAKP-none"
+        elif int_val == 1:
+            return "RAKP-HMAC-SHA1"
+        elif int_val == 2:
+            return "RAKP-HMAC-MD5"
+        elif int_val == 3:
+            return "RAKP-HMAC-SHA256"
+        elif int_val >= 192 and int_val <= 255:
+            return "OEM"
+        else:
+            return "reserved"
+
+    @staticmethod
+    def get_integrity_algorithm_definition(bits_string_val):
+        int_val = int(bits_string_val, 2)
+
+        if int_val == 0:
+            return "none"
+        elif int_val == 1:
+            return "HMAC-SHA1-96"
+        elif int_val == 2:
+            return "HMAC-MD5-128"
+        elif int_val == 3:
+            return "MD5-128"
+        elif int_val == 4:
+            return "HMAC-SHA256-128"
+        elif int_val >= 192 and int_val <= 255:
+            return "OEM"
+        else:
+            return "reserved"
+
+    @staticmethod
+    def get_confidentiality_algorithm_definition(bits_string_val):
+        int_val = int(bits_string_val, 2)
+
+        if int_val == 0:
+            return "none"
+        elif int_val == 1:
+            return "AES-CBC-128"
+        elif int_val == 2:
+            return "xRC4-128"
+        elif int_val == 3:
+            return "xRC4-40"
+        elif int_val >= 48 and int_val <= 63:
+            return "OEM"
+        else:
+            return "reserved"
+    
+    @staticmethod
+    def get_requested_max_privilege_level_definition(bits_string_val):
+        int_val = int(bits_string_val, 2)
+
+        if int_val == 0:
+            return "reserved"
+        elif int_val == 1:
+            return "CALLBACK level"
+        elif int_val == 2:
+            return "USER level"
+        elif int_val == 3:
+            return "OPERATOR level"
+        elif int_val == 4:
+            return "ADMINISTRATOR level"
+        elif int_val == 5:
+            return "OEM Proprietary level"
+        else:
+            raise AttributeError('Unknown requested_max_privilege_level_definition')
+
+    @staticmethod
+    def get_username_human_readable(hex_val):
+        str_val = bytes.fromhex(hex_val).decode("utf8")
+
+        return str_val
+
+    
+    @staticmethod
+    def get_rcmp_status_code_definition(hex_val):
+        maximum_privileges = {
+            '00' :'No errors',
+            '01' : 'Insufficient resources to create a session',
+            '02' : 'Invalid session ID',
+            '03' : 'Invalid payload type',
+            '04' : 'Invalid authentication algorithm',
+            '05' : 'Invalid integrity algorithm',
+            '06' : 'No matching authentication payload',
+            '07' : 'No matching integrity payload',
+            '08' : 'Inactive session id',
+            '09' : 'Invalid role',
+            '0a' : 'Unauthorized role or privilege level requested',
+            '0b' : 'Insufficient resources to create a session at the requested role',
+            '0c' : 'Invalid name length',
+            '0d' : 'Unauthorized name',
+            '0e' : 'Unauthorized GUID',
+            '0f' : 'Invalid integrity check value',
+            '10' : 'Invalid confidentiality algorithm',
+            '11' : 'No Cipher suite match with proposed security algorithm',
+            '12' : 'Illegal or unrecognized parameter'
+        }
+
+        try:
+            return maximum_privileges[hex_val]
+        except:
+            return "Reserved for future definition"
+
+    @staticmethod
+    def generate_managed_system_random_number():
+        lower_bound = 0
+        upper_bound = int('FF'*16, 16)
+
+        random_number = random.randint(lower_bound, upper_bound)
+
+        return hex(random_number)[2:]
+
+
+    @staticmethod
+    def generate_managed_system_GUID():
+        return uuid.uuid4().hex

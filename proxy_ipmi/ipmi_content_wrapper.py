@@ -44,7 +44,7 @@ class IPMIContentWrapper():
         else:
             raise AttributeError("Unrcognized IPMI payload type.")
 
-
+'''
 test = IPMIContentWrapper("IPMI v1.5 payload", '2018c88110388e03a6')
 print(test.ipmi_content_object)
 
@@ -282,3 +282,4 @@ print("ULTIMATE TEST SIK !!!! : " + test.ipmi_content_object.calc_hmac_SIK())
 print(test.ipmi_content_object)
 
 #6020a0dff35e4fac57160275793e067bc6981cf7
+'''

@@ -1,22 +1,19 @@
-from ipmi_1_5_no_auth import IPMI15NoAuth
+from ipmi_1_5_no_auth import IPMI15SessionWrapper
 from ipmi_2_0_no_trail import IPMI20NoTrail
 from ipmi_2_0_trail import IPMI20Trail
 from Crypto.Cipher import AES
 import math
 
-class IPMI_wrapper():
+class IPMISessionWrapper():
 
-    def __init__(self, data):
-        self.ipmi_version = self.guess_version(data)
-        self.ipmi_object = self.get_IPMI_message_instance(self.ipmi_version, data)
-
-    def guess_version(self, data):
+    @staticmethod
+    def guess_version(data):
         
-        if IPMI_wrapper.is_v15_without_auth_code(data):
+        if IPMISessionWrapper.is_v15_without_auth_code(data):
             return "V15_no_authcode"
-        elif IPMI_wrapper.is_v20_without_trailing(data):
+        elif IPMISessionWrapper.is_v20_without_trailing(data):
             return "V20_no_trailing"
-        elif IPMI_wrapper.is_v20_with_trailing(data):
+        elif IPMISessionWrapper.is_v20_with_trailing(data):
             return "V20_trailing"
         else:
             raise AttributeError("Unrcognized IPMI version.")
@@ -59,17 +56,19 @@ class IPMI_wrapper():
         return False
     
     @staticmethod
-    def get_IPMI_message_instance(ipmi_version, data):
+    def get_IPMI_message_instance(data):
+        ipmi_version = IPMISessionWrapper.guess_version(data)
+
         if ipmi_version == "V15_no_authcode":
-            return IPMI15NoAuth(data)
+            return IPMI15SessionWrapper(data = data)
         elif ipmi_version == "V20_no_trailing":
-            return IPMI20NoTrail(data)
+            return IPMI20NoTrail(data = data)
         elif ipmi_version == "V20_trailing":
-            return IPMI20Trail(data)
+            return IPMI20Trail(data = data)
         else:
             raise AttributeError("Unrcognized IPMI version.")
 
-
+'''
 print(IPMI_wrapper.is_v15_without_auth_code('000000000000000000092018c88110388e03a6'))
 print(IPMI_wrapper.is_v15_without_auth_code('00000000000000000010811c632010380001840403000000000c'))
 print(IPMI_wrapper.is_v15_without_auth_code('061000000000000000002000150300008a0a30d7000000080100000001000008010000000200000801000000'))
@@ -88,3 +87,4 @@ print(test.ipmi_object.ipmi_session_id)
 print(test.ipmi_object.message_length)
 print(test.ipmi_object.message_content)
 print(test.ipmi_object.trailer)
+'''

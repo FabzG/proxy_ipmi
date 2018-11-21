@@ -1,6 +1,5 @@
 {
   "tests/test_RMCP_message.py": true,
-  "tests/test_ipmi.py": true,
   "tests/test_ipmi.py::test_get_first_byte": true,
   "tests/test_ipmi.py::test_ipmi_lan_req_msg_checksum_one": true,
   "tests/test_ipmi.py::test_ipmi_lan_req_msg_checksum_two": true,

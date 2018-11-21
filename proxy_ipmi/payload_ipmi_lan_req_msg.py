@@ -1,17 +1,17 @@
 from ipmi_helper import IPMIHelper
-class PayloadIPMIv15():
+class IPMILanRequest():
 
     def __init__(self, **keys):
 
         if len(keys) == 1:
-            self.rsAddr = PayloadIPMIv15.extract_rsAddr(keys['data'])
-            self.netFn, self.rsLUN = PayloadIPMIv15.extract_netFn_rsLUN(keys['data'])
-            self.checksum1 = PayloadIPMIv15.extract_checksum1(keys['data'])
-            self.rqAddr = PayloadIPMIv15.extract_rqAddr(keys['data'])
-            self.rqSeq, self.rqLUN = PayloadIPMIv15.extract_rqSeq_rqLUN(keys['data'])
-            self.command = PayloadIPMIv15.extract_command(keys['data'])
-            self.request_data = PayloadIPMIv15.extract_request_data(keys['data'])
-            self.checksum2 = PayloadIPMIv15.extract_checksum2(keys['data'])
+            self.rsAddr = IPMILanRequest.extract_rsAddr(keys['data'])
+            self.netFn, self.rsLUN = IPMILanRequest.extract_netFn_rsLUN(keys['data'])
+            self.checksum1 = IPMILanRequest.extract_checksum1(keys['data'])
+            self.rqAddr = IPMILanRequest.extract_rqAddr(keys['data'])
+            self.rqSeq, self.rqLUN = IPMILanRequest.extract_rqSeq_rqLUN(keys['data'])
+            self.command = IPMILanRequest.extract_command(keys['data'])
+            self.request_data = IPMILanRequest.extract_request_data(keys['data'])
+            self.checksum2 = IPMILanRequest.extract_checksum2(keys['data'])
         elif len(keys) == 8:
             self.rsAddr = keys['rsAddr']
             self.netFn = keys['netFn']
@@ -28,10 +28,10 @@ class PayloadIPMIv15():
                                 + keys['command'] \
                                 + keys['request_data'])
         else:
-            raise AttributeError("Only 1 and 8 arguments constructor exists for PayloadIPMIv15 class.")
+            raise AttributeError("Only 1 and 8 arguments constructor exists for IPMILanRequest class.")
   
     def __repr__(self):
-        return "------- PayloadIPMIv15 -------" \
+        return "------- IPMILanRequest -------" \
                 + "\nrsAddr : " + self.rsAddr \
                 + "\nnetFn : " + self.netFn \
                 + "\nrsLUN : " + self.rsLUN \

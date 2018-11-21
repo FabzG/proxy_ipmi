@@ -7,8 +7,14 @@ class IPMIHelper():
     @classmethod
     def hexify_binary_string(cls, *args):
         args = "".join(args)
-        hex_value = hex(int(args, 2))
-        return hex_value[2:]
+        hex_value = hex(int(args, 2))[2:]
+
+        hex_length_of_binary = int(len(args)/4)
+
+        if len(hex_value) < hex_length_of_binary:
+            hex_value = '0'*(hex_length_of_binary - len(hex_value))+hex_value
+        
+        return hex_value
 
     @classmethod
     def get_auth_type(cls, auth_type_byte):

@@ -2,7 +2,7 @@ from ipmi_helper import IPMIHelper
 from hashlib import sha1
 import hmac
 import random
-import uuid
+
 
 class PayloadRAKPMessage2():
 
@@ -29,8 +29,8 @@ class PayloadRAKPMessage2():
             self.rcmp_status_code = keys['rcmp_status_code']
             self.reserved = '0000'
             self.RCMP_remote_console_session_id = keys['RCMP_remote_console_session_id']
-            self.managed_system_random_number = PayloadRAKPMessage2.generate_managed_system_random_number()
-            self.managed_system_GUID = PayloadRAKPMessage2.generate_managed_system_GUID()
+            self.managed_system_random_number = IPMIHelper.generate_managed_system_random_number()
+            self.managed_system_GUID = IPMIHelper.generate_managed_system_GUID()
             self.RAKP_message_1_managed_system_session_id = keys['RAKP_message_1_managed_system_session_id']
             self.RAKP_message_1_remote_console_random_number = keys['RAKP_message_1_remote_console_random_number']
             self.RAKP_message_1_requested_max_privilege = keys['RAKP_message_1_requested_max_privilege']
@@ -46,7 +46,7 @@ class PayloadRAKPMessage2():
     def __repr__(self):
         return "------- PayloadRAKPMessage2 -------" \
                 + "\nRAKP_message_1_message_tag : " + self.RAKP_message_1_message_tag \
-                + "\nrcmp_status_code : " + self.rcmp_status_code + " human readable : " + PayloadRAKPMessage2.get_rcmp_status_code_definition(self.rcmp_status_code) \
+                + "\nrcmp_status_code : " + self.rcmp_status_code + " human readable : " + IPMIHelper.get_rcmp_status_code_definition(self.rcmp_status_code) \
                 + "\nreserved : " + self.reserved \
                 + "\nRCMP_remote_console_session_id : " + self.RCMP_remote_console_session_id \
                 + "\nmanaged_system_random_number : " + self.managed_system_random_number \

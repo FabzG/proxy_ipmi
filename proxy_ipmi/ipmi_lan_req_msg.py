@@ -52,7 +52,7 @@ class IPMILanRequestMessage():
         print("ipmi_ciphered_payload : " + str(self.ciphered_msg[32:]))
         aes = AES.new(bytes.fromhex(self.ipmi_k2_short_key), AES.MODE_CBC, bytes.fromhex(self.iv))
         decrypted_msg = aes.decrypt(bytes.fromhex(self.ciphered_msg[32:]))
-        return IPMILanRequestMessage.unpad_decrypted_msg(decrypted_msg.hex())
+        return IPMIHelper.unpad_ipmi_lan_decrypted_msg(decrypted_msg.hex())
 
     def generate_ipmi_k2_key(self):
         if self.RCMP_auth_algorithm == 'RAKP-HMAC-SHA1':
@@ -86,22 +86,22 @@ class IPMILanRequestMessage():
         return rqSeq_rqlun
 
     def extract_netFn(self):
-        netFn = IPMILanRequestMessage.get_bits(self.netFn_rslun)[2:]
+        netFn = IPMIHelper.get_bits(self.netFn_rslun)[2:]
         netFn.reverse
         return "".join(netFn)
 
     def extract_rsLun(self):
-        lun = IPMILanRequestMessage.get_bits(self.netFn_rslun)[0:2]
+        lun = IPMIHelper.get_bits(self.netFn_rslun)[0:2]
         lun.reverse
         return "".join(lun)
 
     def extract_rqSeq(self):
-        rqSeq = IPMILanRequestMessage.get_bits(self.rqSeq_rqLun)[2:]
+        rqSeq = IPMIHelper.get_bits(self.rqSeq_rqLun)[2:]
         rqSeq.reverse
         return "".join(rqSeq)
 
     def extract_rqLun(self):
-        rqLun = IPMILanRequestMessage.get_bits(self.rqSeq_rqLun)[0:2]
+        rqLun = IPMIHelper.get_bits(self.rqSeq_rqLun)[0:2]
         rqLun.reverse
         return "".join(rqLun)
 
@@ -114,7 +114,7 @@ class IPMILanRequestMessage():
 
     def validate_checksum_rsAdd_netFn_rsLun(self):
         bytes_to_check = self.rsAddr + self.netFn_rslun
-        calculated_checksum = IPMILanRequestMessage.two_complement_checksum(bytes_to_check)
+        calculated_checksum = IPMIHelper.two_complement_checksum(bytes_to_check)
         if calculated_checksum != self.checksum_rsAdd_netFn_lun:
             raise AssertionError()
             #print("WRONG CHECKSUM !! calc : " + calculated_checksum)
@@ -130,7 +130,7 @@ class IPMILanRequestMessage():
 
     def validate_checksum_two(self):
         bytes_to_check = self.rqAddr + self.rqSeq_rqLun + self.command + self.command_data
-        calculated_checksum = IPMILanRequestMessage.two_complement_checksum(bytes_to_check)
+        calculated_checksum = IPMIHelper.two_complement_checksum(bytes_to_check)
         if calculated_checksum != self.checksum_two:
             raise AssertionError()
             #print("WRONG CHECKSUM !! calc : " + calculated_checksum)

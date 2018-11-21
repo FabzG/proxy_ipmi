@@ -14,21 +14,21 @@ class PayloadRMCPOpenSessionRequest():
     def __repr__(self):
         return "------- PayloadRMCPOpenSessionRequest -------" \
                 + "\nmessage_tag : " + self.message_tag \
-                + "\nrequested_max_privilege : " + self.requested_max_privilege + " human readable : " + PayloadRMCPOpenSessionRequest.get_requested_maximum_privilege_definition(self.requested_max_privilege) \
+                + "\nrequested_max_privilege : " + self.requested_max_privilege + " human readable : " + IPMIHelper.get_requested_maximum_privilege_definition(self.requested_max_privilege) \
                 + "\nreserved : " + self.reserved \
                 + "\nremote_console_session_id : " + self.remote_console_session_id \
                 + "\nauth_payload : " + self.auth_payload \
                 + "\n  auth_payload_type : " + self.get_auth_payload_type() \
                 + "\n  auth_payload_length : " + self.get_auth_payload_length() \
-                + "\n  auth_payload_auth_algo : " + self.get_auth_payload_auth_algo() + " human readable : " + PayloadRMCPOpenSessionRequest.get_auth_algorithm_definition(self.get_auth_payload_auth_algo()) \
+                + "\n  auth_payload_auth_algo : " + self.get_auth_payload_auth_algo() + " human readable : " + IPMIHelper.get_auth_algorithm_definition(self.get_auth_payload_auth_algo()) \
                 + "\nintegrity_payload : " +  self.integrity_payload \
                 + "\n  integrity_payload_type : " +  self.get_integrity_payload_type() \
                 + "\n  integrity_payload_length : " + self.get_integrity_payload_length() \
-                + "\n  integrity_payload_integrity_algo : " + self.get_integrity_payload_integrity_algo() + " human readable : " + PayloadRMCPOpenSessionRequest.get_integrity_algorithm_definition(self.get_integrity_payload_integrity_algo()) \
+                + "\n  integrity_payload_integrity_algo : " + self.get_integrity_payload_integrity_algo() + " human readable : " + IPMIHelper.get_integrity_algorithm_definition(self.get_integrity_payload_integrity_algo()) \
                 + "\nconfidentiality_payload : " + self.confidentiality_payload \
                 + "\n  confidentiality_payload_type : " + self.get_confidentiality_payload_type() \
                 + "\n  confidentiality_payload_length : " + self.get_confidentiality_payload_length() \
-                + "\n  confidentiality_payload_confidentiality_algo : " + self.get_confidentiality_payload_integrity_algo() + " human readable : " + PayloadRMCPOpenSessionRequest.get_confidentiality_algorithm_definition(self.get_confidentiality_payload_integrity_algo()) \
+                + "\n  confidentiality_payload_confidentiality_algo : " + self.get_confidentiality_payload_integrity_algo() + " human readable : " + IPMIHelper.get_confidentiality_algorithm_definition(self.get_confidentiality_payload_integrity_algo()) \
 
     @staticmethod
     def extract_message_tag(data):

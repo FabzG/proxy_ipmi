@@ -31,10 +31,10 @@ class PayloadRAKPMessage1():
                 + "\nremote_console_random_number : " + self.remote_console_random_number \
                 + "\nrequested_max_privilege : " + self.requested_max_privilege \
                 + "\n  requested_max_privilege_type : " + self.get_requested_max_privilege_type() \
-                + "\n  requested_max_privilege_level : " + self.get_requested_max_privilege_level() + " human readable : " + PayloadRAKPMessage1.get_requested_max_privilege_level_definition(self.get_requested_max_privilege_level()) \
+                + "\n  requested_max_privilege_level : " + self.get_requested_max_privilege_level() + " human readable : " + IPMIHelper.get_requested_max_privilege_level_definition(self.get_requested_max_privilege_level()) \
                 + "\nreserved2 : " + self.reserved2 \
                 + "\nuser_name_length : " + self.user_name_length \
-                + "\nuser_name : " + self.user_name + " human readable : " + PayloadRAKPMessage1.get_username_human_readable(self.user_name)
+                + "\nuser_name : " + self.user_name + " human readable : " + IPMIHelper.get_username_human_readable(self.user_name)
 
     @staticmethod
     def extract_message_tag(data):

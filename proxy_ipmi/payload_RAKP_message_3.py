@@ -20,7 +20,7 @@ class PayloadRAKPMessage3():
     def __repr__(self):
         return "------- PayloadRAKPMessage3 -------" \
                 + "\nmessage_tag : " + self.message_tag \
-                + "\nrcmp_status_code : " + self.rcmp_status_code + " human readable : " + PayloadRAKPMessage3.get_rcmp_status_code_definition(self.rcmp_status_code) \
+                + "\nrcmp_status_code : " + self.rcmp_status_code + " human readable : " + IPMIHelper.get_rcmp_status_code_definition(self.rcmp_status_code) \
                 + "\nreserved : " + self.reserved \
                 + "\nmanaged_system_session_id : " + self.managed_system_session_id \
                 + "\nkey_exchange_auth_code : " + self.key_exchange_auth_code

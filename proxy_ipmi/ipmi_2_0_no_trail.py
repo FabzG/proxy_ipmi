@@ -15,7 +15,7 @@ class IPMI20NoTrail():
             self.message_length = IPMI20NoTrail.extract_message_length(keys['data'])
             self.message_content = IPMI20NoTrail.extract_message_content(keys['data'])
             self.trailer = None
-        elif len(keys) == 
+        elif len(keys) == 8:
             self.ipmi_auth_type = keys['ipmi_auth_type']
             self.ipmi_payload_encrypted = keys['ipmi_payload_encrypted']
             self.ipmi_payload_authentication = keys['ipmi_payload_authentication']

@@ -7,24 +7,25 @@ import math
 
 class IPMILanRequestMessage():
 
-    def __init__(self, ciphered_msg, ipmi_sik, RCMP_auth_algorithm):
-        self.ciphered_msg = ciphered_msg
-        self.ipmi_sik = ipmi_sik
-        self.RCMP_auth_algorithm = RCMP_auth_algorithm
-        self.ipmi_k2_key = self.generate_ipmi_k2_key()
-        self.ipmi_k2_short_key = self.extract_ipmi_k2_short_key()
-        self.iv = self.extract_iv()
-        self.uncipherded_payload = self.decrypt_msg()
-        self.rsAddr = self.extract_rsAddr()
-        self.netFn_rslun  = self.extract_netFn_rslun()
-        self.checksum_rsAdd_netFn_lun = self.extract_checksum_rsAdd_netFn_rsLun()
-        self.validate_checksum_rsAdd_netFn_rsLun()
-        self.rqAddr = self.extract_rqAddr()
-        self.rqSeq_rqLun  = self.extract_rqSeq_rqlun()
-        self.command = self.extract_command()
-        self.command_data = self.extract_command_data()
-        self.checksum_two = self.extract_checksum_two()
-        self.validate_checksum_two()
+    def __init__(self, **keys):#ciphered_msg, ipmi_sik, RCMP_auth_algorithm):
+        if len(keys) == 3:
+            self.ciphered_msg = keys['ciphered_msg']
+            self.ipmi_sik = keys['ipmi_sik']
+            self.RCMP_auth_algorithm = keys['RCMP_auth_algorithm']
+            self.ipmi_k2_key = self.generate_ipmi_k2_key()
+            self.ipmi_k2_short_key = self.extract_ipmi_k2_short_key()
+            self.iv = self.extract_iv()
+            self.uncipherded_payload = self.decrypt_msg()
+            self.rsAddr = self.extract_rsAddr()
+            self.netFn_rslun  = self.extract_netFn_rslun()
+            self.checksum_rsAdd_netFn_lun = self.extract_checksum_rsAdd_netFn_rsLun()
+            self.validate_checksum_rsAdd_netFn_rsLun()
+            self.rqAddr = self.extract_rqAddr()
+            self.rqSeq_rqLun  = self.extract_rqSeq_rqlun()
+            self.command = self.extract_command()
+            self.command_data = self.extract_command_data()
+            self.checksum_two = self.extract_checksum_two()
+            self.validate_checksum_two()
 
     def __repr__(self):
         return "------- IPMILanRequestMessage -------" \
@@ -45,7 +46,7 @@ class IPMILanRequestMessage():
                 + "\n  rqLun : " + self.extract_rqLun() \
                 + "\ncommand : " + self.command \
                 + "\ncommand_data : " + self.command_data \
-                + "\nchecksum_two : " + self.checksum_two \
+                + "\nchecksum_two : " + self.checksum_two
 
 
     def decrypt_msg(self):

@@ -2,16 +2,28 @@ from ipmi_helper import IPMIHelper
 
 class PayloadRMCPOpenSessionResponse():
 
-    def __init__(self, data):
-        self.message_tag = PayloadRMCPOpenSessionResponse.extract_message_tag(data)
-        self.rmcp_status_code = PayloadRMCPOpenSessionResponse.extract_rmcp_status_code(data)
-        self.max_privilege_level = PayloadRMCPOpenSessionResponse.extract_max_privilege_level(data)
-        self.reserved = PayloadRMCPOpenSessionResponse.extract_reserved(data)
-        self.remote_console_session_id = PayloadRMCPOpenSessionResponse.extract_remote_console_session_id(data)
-        self.managed_system_session_id = PayloadRMCPOpenSessionResponse.extract_managed_system_session_id(data)
-        self.auth_payload = PayloadRMCPOpenSessionResponse.extract_auth_payload(data)
-        self.integrity_payload = PayloadRMCPOpenSessionResponse.extract_integrity_payload(data)
-        self.confidentiality_payload = PayloadRMCPOpenSessionResponse.extract_confidentiality_payload(data)
+    def __init__(self, **keys):
+
+        if len(keys) == 1:
+            self.message_tag = PayloadRMCPOpenSessionResponse.extract_message_tag(keys['data'])
+            self.rmcp_status_code = PayloadRMCPOpenSessionResponse.extract_rmcp_status_code(keys['data'])
+            self.max_privilege_level = PayloadRMCPOpenSessionResponse.extract_max_privilege_level(keys['data'])
+            self.reserved = PayloadRMCPOpenSessionResponse.extract_reserved(keys['data'])
+            self.remote_console_session_id = PayloadRMCPOpenSessionResponse.extract_remote_console_session_id(keys['data'])
+            self.managed_system_session_id = PayloadRMCPOpenSessionResponse.extract_managed_system_session_id(keys['data'])
+            self.auth_payload = PayloadRMCPOpenSessionResponse.extract_auth_payload(keys['data'])
+            self.integrity_payload = PayloadRMCPOpenSessionResponse.extract_integrity_payload(keys['data'])
+            self.confidentiality_payload = PayloadRMCPOpenSessionResponse.extract_confidentiality_payload(keys['data'])
+        elif len(keys) == 7:
+            self.message_tag = keys['message_tag']
+            self.rmcp_status_code = keys['rmcp_status_code']
+            self.max_privilege_level = keys['max_privilege_level']
+            self.reserved = '00'
+            self.remote_console_session_id = keys['remote_console_session_id']
+            self.managed_system_session_id = IPMIHelper.generate_managed_system_session_id()
+            self.auth_payload = keys['auth_payload']
+            self.integrity_payload = keys['integrity_payload']
+            self.confidentiality_payload = keys['confidentiality_payload']
 
     def __repr__(self):
         return "------- PayloadRMCPOpenSessionResponse -------" \
@@ -33,6 +45,9 @@ class PayloadRMCPOpenSessionResponse():
                 + "\n  confidentiality_payload_type : " + self.get_confidentiality_payload_type() \
                 + "\n  confidentiality_payload_length : " + self.get_confidentiality_payload_length() \
                 + "\n  confidentiality_payload_confidentiality_algo : " + self.get_confidentiality_payload_integrity_algo() + " human readable : " + IPMIHelper.get_confidentiality_algorithm_definition(self.get_confidentiality_payload_integrity_algo()) \
+
+    def serialize(self):
+        return self.message_tag + self.rmcp_status_code + self.max_privilege_level + self.reserved + self.remote_console_session_id + self.managed_system_session_id + self.auth_payload + self.integrity_payload + self.confidentiality_payload
 
     @staticmethod
     def extract_message_tag(data):

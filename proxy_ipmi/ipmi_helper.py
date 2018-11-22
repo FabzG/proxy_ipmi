@@ -62,8 +62,8 @@ class IPMIHelper():
         else:
             return "Reserved"
 
-    @classmethod
-    def get_payload_encryption(cls, payload_type_byte):
+    @staticmethod
+    def get_payload_encryption(payload_type_byte):
         if payload_type_byte == None:
             return None
         
@@ -77,51 +77,130 @@ class IPMIHelper():
         else:
             raise AttributeError("Impossible value for payload encryption bit")
 
-    @classmethod
-    def get_payload_authentication(cls, payload_type_byte):
+    @staticmethod
+    def get_payload_authentication(payload_type_byte):
         if payload_type_byte == None:
             return None
         
         payload_type_bits = IPMIHelper.get_bits(payload_type_byte)
-        encryption_status = payload_type_bits[6]
+        authentication_status = payload_type_bits[6]
 
-        if encryption_status == '0':
+        if authentication_status == '0':
             return "unauthenticated"
-        elif encryption_status == '1':
+        elif authentication_status == '1':
             return "authenticated"
         else:
             raise AttributeError("Impossiblme value for payload authentication bit")
 
-    @classmethod
-    def get_payload_type(cls, payload_type_byte):
+    @staticmethod
+    def increment_netFn(netFn):
+        invert_bits = netFn[::-1]
+        int_value = int(invert_bits, 2)
+        int_value += 1
+        hex_value = hex(int_value)[2:]
+        
+        if len(hex_value) < 2:
+            hex_value = '0' + hex_value
+
+        bits = IPMIHelper.get_bits(hex_value)
+        
+        bit_string = "".join(bits[0:6])
+
+        return bit_string
+
+
+
+    @staticmethod
+    def get_payload_type(payload_type_byte):
         if payload_type_byte == None:
             return None
         
-        payload_type_bits = IPMIHelper.get_bits(payload_type_byte)
-        encryption_status = int("".join(payload_type_bits[0:6]), 2)
+        payload_type_bits = IPMIHelper.get_bits(payload_type_byte)[0:6]
+        payload_type_bits.reverse()
+        payload_type = int("".join(payload_type_bits), 2)
 
-        if encryption_status == 0:
+        if payload_type == 0:
             return "IPMI Message"
-        elif encryption_status == 1:
+        elif payload_type == 1:
             return "SOL (serial over LAN)"
-        elif encryption_status == 2:
+        elif payload_type == 2:
             return "OEM Explicit"
-        elif encryption_status == 16:
+        elif payload_type == 16:
             return "RMCP+ Open Session Request"
-        elif encryption_status == 17:
+        elif payload_type == 17:
             return "RMCP+ Open Session Response"
-        elif encryption_status == 18:
+        elif payload_type == 18:
             return "RAKP Message 1"
-        elif encryption_status == 19:
+        elif payload_type == 19:
             return "RAKP Message 2"
-        elif encryption_status == 20:
+        elif payload_type == 20:
             return "RAKP Message 3"
-        elif encryption_status == 21:
+        elif payload_type == 21:
             return "RAKP Message 4"
-        elif encryption_status >= 32 and encryption_status <= 39:
+        elif payload_type >= 32 and payload_type <= 39:
             return "OEM Payload"
         else:
             return "reserved"
+
+    @staticmethod
+    def get_payload_code(payload_type_definition):
+        if payload_type_definition == None:
+            return None
+        
+        if payload_type_definition == "IPMI Message":
+            int_value = 0
+        elif payload_type_definition == "SOL (serial over LAN)":
+            int_value = 1
+        elif payload_type_definition == "OEM Explicit":
+            int_value = 2
+        elif payload_type_definition == "RMCP+ Open Session Request":
+            int_value = 16
+        elif payload_type_definition == "RMCP+ Open Session Response":
+            int_value = 17
+        elif payload_type_definition == "RAKP Message 1":
+            int_value = 18
+        elif payload_type_definition == "RAKP Message 2":
+            int_value = 19
+        elif payload_type_definition == "RAKP Message 3":
+            int_value = 20
+        elif payload_type_definition == "RAKP Message 4":
+            int_value = 21
+        else:
+            raise AttributeError("Unknown payload type definition.") 
+
+        hex_value = hex(int_value)[2:]
+        
+        payload_type_bits = IPMIHelper.get_bits(hex_value)
+
+        delta_bits_size = 6 - len(payload_type_bits)
+
+        if delta_bits_size > 0:
+            payload_type_bits = '0'*delta_bits_size + "".join(payload_type_bits)
+        else:
+            payload_type_bits = '0'*delta_bits_size + "".join(payload_type_bits)
+        
+        payload_type_bits = payload_type_bits[::-1]
+
+        return payload_type_bits
+
+    @staticmethod
+    def generate_rcmp_payload_type(is_payload_encrypted, is_payload_authenticated, payload_type_definition):
+        
+        if is_payload_encrypted:
+            bit_encrypted = '1'
+        else:
+            bit_encrypted = '0'
+
+        if is_payload_authenticated:
+            bit_authenticated = '1'
+        else:
+            bit_authenticated = '0'
+
+        bits_payload_type = IPMIHelper.get_payload_code(payload_type_definition)
+
+        hex_value = hex(int(bit_encrypted + bit_authenticated + bits_payload_type, 2))[2:]
+
+        return hex_value
     
     @staticmethod
     def get_bits(hex_byte):
@@ -336,15 +415,51 @@ class IPMIHelper():
             raise AttributeError('Unknown requested_max_privilege_level_definition')
 
     @staticmethod
+    def get_requested_max_privilege_level_code(string_val):
+        
+        if string_val == "reserved":
+            int_val = 0
+        elif string_val == "CALLBACK level":
+            int_val = 1
+        elif string_val == "USER level":
+            int_val = 2
+        elif string_val == "OPERATOR level":
+            int_val = 3
+        elif string_val == "ADMINISTRATOR level":
+            int_val = 4
+        elif string_val == "OEM Proprietary level":
+            int_val = 5
+        else:
+            raise AttributeError('Unknown requested_max_privilege_level_definition')
+
+        hex_val = hex(int_val)[2:]
+
+        if len(hex_val) < 2:
+            hex_val = '0'+hex_val
+
+        return hex_val
+
+    @staticmethod
     def get_username_human_readable(hex_val):
         str_val = bytes.fromhex(hex_val).decode("utf8")
 
         return str_val
 
+    @staticmethod
+    def get_message_length(message):
+        message_length = int(len(message) / 2)
+
+        hex_val = hex(message_length)[2:]
+        delta_length = 4 - len(hex_val)
+
+        if delta_length > 0:
+            hex_val = '0'*delta_length + hex_val
+
+        return IPMIHelper.invert_hex(hex_val)
     
     @staticmethod
     def get_rcmp_status_code_definition(hex_val):
-        maximum_privileges = {
+        status_codes = {
             '00' :'No errors',
             '01' : 'Insufficient resources to create a session',
             '02' : 'Invalid session ID',
@@ -367,9 +482,39 @@ class IPMIHelper():
         }
 
         try:
-            return maximum_privileges[hex_val]
+            return status_codes[hex_val]
         except:
             return "Reserved for future definition"
+
+    @staticmethod
+    def get_rcmp_status_code_value(val):
+        
+        status_values = {
+            'No errors' : '00',
+            'Insufficient resources to create a session' : '01',
+            'Invalid session ID' : '02',
+            'Invalid payload type' : '03',
+            'Invalid authentication algorithm' : '04',
+            'Invalid integrity algorithm' : '05',
+            'No matching authentication payload' : '06',
+            'No matching integrity payload' : '07',
+            'Inactive session id' : '08',
+            'Invalid role' : '09',
+            'Unauthorized role or privilege level requested' : '0a',
+            'Insufficient resources to create a session at the requested role' : '0b',
+            'Invalid name length' : '0c',
+            'Unauthorized name' : '0d',
+            'Unauthorized GUID' : '0e',
+            'Invalid integrity check value' : '0f',
+            'Invalid confidentiality algorithm' : '10',
+            'No Cipher suite match with proposed security algorithm' : '11',
+            'Illegal or unrecognized parameter' : '12'
+        }
+
+        try:
+            return status_values[val]
+        except:
+            return "Unknown status code value"
 
     @staticmethod
     def generate_managed_system_random_number():
@@ -384,3 +529,12 @@ class IPMIHelper():
     @staticmethod
     def generate_managed_system_GUID():
         return uuid.uuid4().hex
+
+    @staticmethod
+    def generate_managed_system_session_id():
+        lower_bound = 1
+        upper_bound = int('FF'*4, 16)
+
+        random_number = random.randint(lower_bound, upper_bound)
+
+        return hex(random_number)[2:]

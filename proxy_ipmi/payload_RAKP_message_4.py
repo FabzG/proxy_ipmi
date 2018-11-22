@@ -43,6 +43,9 @@ class PayloadRAKPMessage4():
                 + "\nRAKP_message_2_managed_system_GUID : " + str(self.RAKP_message_2_managed_system_GUID) \
                 + "\nintegrity_check_value : " + self.integrity_check_value
  
+    def serialize(self):
+        return self.RAKP_message_3_message_tag + self.rcmp_status_code + self.reserved + self.RCMP_remote_console_session_id + self.integrity_check_value
+
     @staticmethod
     def extract_message_tag(data):
         return data[0:2]

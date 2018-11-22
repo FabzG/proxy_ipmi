@@ -1,12 +1,13 @@
-from payload_ipmi_v15 import PayloadIPMIv15
+from payload_ipmi_lan_req_msg import IPMILanRequest
+from payload_ipmi_lan_resp_msg import IPMILanResponse
 from payload_rmcp_open_session_req import PayloadRMCPOpenSessionRequest
 from payload_rmcp_open_session_resp import PayloadRMCPOpenSessionResponse
 from payload_RAKP_message_1 import PayloadRAKPMessage1
 from payload_RAKP_message_2 import PayloadRAKPMessage2
 from payload_RAKP_message_3 import PayloadRAKPMessage3
 from payload_RAKP_message_4 import PayloadRAKPMessage4
-from ipmi_lan_req_msg import IPMILanRequestMessage
-from ipmi_lan_resp_msg import IPMILanResponseMessage
+#from ipmi_lan_req_msg import IPMILanRequestMessage
+#from ipmi_lan_resp_msg import IPMILanResponseMessage
 from Crypto.Cipher import AES
 from ipmi_helper import IPMIHelper
 import math
@@ -22,9 +23,9 @@ class IPMIContentWrapper():
         if payload_type == "IPMI Message":
             return PayloadIPMIMessage(data)
         elif payload_type == "RMCP+ Open Session Request":
-            return PayloadRMCPOpenSessionRequest(data)
+            return PayloadRMCPOpenSessionRequest(data=data)
         elif payload_type == "RMCP+ Open Session Response":
-            return PayloadRMCPOpenSessionResponse(data)
+            return PayloadRMCPOpenSessionResponse(data=data)
         elif payload_type == "RAKP Message 1":
             return PayloadRAKPMessage1(data = data)
         elif payload_type == "RAKP Message 2":
@@ -283,3 +284,7 @@ print(test.ipmi_content_object)
 
 #6020a0dff35e4fac57160275793e067bc6981cf7
 '''
+test = IPMIContentWrapper("RMCP+ Open Session Request", '00000000a4a3a2a0000000080100000001000008010000000200000801000000')
+print(test.ipmi_content_object)
+test = IPMIContentWrapper("RMCP+ Open Session Response", '00000400a4a3a2a09b52f949000000080100000801000008010000080200000801ff0207')
+print(test.ipmi_content_object)

@@ -61,6 +61,9 @@ class PayloadRAKPMessage2():
                 + "\nkey_exchange_auth_code : " + self.key_exchange_auth_code \
                 + "\nSIK : " + str(self.SIK)
  
+    def serialize(self):
+        return self.RAKP_message_1_message_tag + self.rcmp_status_code + self.reserved + self.RCMP_remote_console_session_id + self.managed_system_random_number + self.managed_system_GUID + self.key_exchange_auth_code
+
     @staticmethod
     def extract_message_tag(data):
         return data[0:2]

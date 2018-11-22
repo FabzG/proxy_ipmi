@@ -2,21 +2,23 @@ from ipmi_helper import IPMIHelper
 from Crypto.Cipher import AES
 import math
 
-class IPMI20Trail():
+class IPMI20TrailWrapper():
 
     def __init__(self, **keys):
 
         if len(keys) == 1:
-            self.ipmi_auth_type = IPMI20Trail.extract_ipmi_auth_type(keys['data'])
-            self.ipmi_payload_encrypted = IPMI20Trail.extract_ipmi_payload_encryption(keys['data'])
-            self.ipmi_payload_authentication = IPMI20Trail.extract_ipmi_payload_authentication(keys['data'])
-            self.ipmi_payload_type = IPMI20Trail.extract_ipmi_payload_type(keys['data'])
-            self.ipmi_session_seq = IPMI20Trail.extract_ipmi_session_seq(keys['data'])
-            self.ipmi_session_id = IPMI20Trail.extract_ipmi_session_id(keys['data'])
-            self.message_length = IPMI20Trail.extract_message_length(keys['data'])
-            self.message_content = IPMI20Trail.extract_message_content(self.message_length, keys['data'])
-            self.trailer = IPMI20Trail.extract_trailer(self.message_length, keys['data'])
+            self.ipmi_wrapper_type = "IPMI v2.0 Trail"
+            self.ipmi_auth_type = IPMI20TrailWrapper.extract_ipmi_auth_type(keys['data'])
+            self.ipmi_payload_encrypted = IPMI20TrailWrapper.extract_ipmi_payload_encryption(keys['data'])
+            self.ipmi_payload_authentication = IPMI20TrailWrapper.extract_ipmi_payload_authentication(keys['data'])
+            self.ipmi_payload_type = IPMI20TrailWrapper.extract_ipmi_payload_type(keys['data'])
+            self.ipmi_session_seq = IPMI20TrailWrapper.extract_ipmi_session_seq(keys['data'])
+            self.ipmi_session_id = IPMI20TrailWrapper.extract_ipmi_session_id(keys['data'])
+            self.message_length = IPMI20TrailWrapper.extract_message_length(keys['data'])
+            self.message_content = IPMI20TrailWrapper.extract_message_content(self.message_length, keys['data'])
+            self.trailer = IPMI20TrailWrapper.extract_trailer(self.message_length, keys['data'])
         elif len(keys) == 9:
+            self.ipmi_wrapper_type = "IPMI v2.0 Trail"
             self.ipmi_auth_type = keys['ipmi_auth_type']
             self.ipmi_payload_encrypted = keys['ipmi_payload_encrypted']
             self.ipmi_payload_authentication = keys['ipmi_payload_authentication']

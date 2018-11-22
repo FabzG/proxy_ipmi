@@ -1,6 +1,6 @@
 from ipmi_1_5_no_auth import IPMI15SessionWrapper
-from ipmi_2_0_no_trail import IPMI20NoTrail
-from ipmi_2_0_trail import IPMI20Trail
+from ipmi_2_0_no_trail import IPMI20NoTrailWrapper
+from ipmi_2_0_trail import IPMI20TrailWrapper
 from Crypto.Cipher import AES
 import math
 
@@ -62,9 +62,9 @@ class IPMISessionWrapper():
         if ipmi_version == "V15_no_authcode":
             return IPMI15SessionWrapper(data = data)
         elif ipmi_version == "V20_no_trailing":
-            return IPMI20NoTrail(data = data)
+            return IPMI20NoTrailWrapper(data = data)
         elif ipmi_version == "V20_trailing":
-            return IPMI20Trail(data = data)
+            return IPMI20TrailWrapper(data = data)
         else:
             raise AttributeError("Unrcognized IPMI version.")
 

@@ -23,6 +23,8 @@ class IPMI20NoTrailWrapper():
             self.message_length = IPMIHelper.get_message_length(keys['message_content'])
             self.message_content = keys['message_content']
             self.trailer = None
+        else:
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
 
     def __repr__(self):
         return "------- IPMI20NoTrailWrapper -------" \

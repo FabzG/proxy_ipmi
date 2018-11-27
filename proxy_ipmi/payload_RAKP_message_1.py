@@ -21,6 +21,8 @@ class PayloadRAKPMessage1():
             self.reserved2 = '0000'
             self.user_name_length = PayloadRAKPMessage1.extract_user_name_length(keys['user_name_length'])
             self.user_name = PayloadRAKPMessage1.extract_user_name(keys['user_name'])
+        else:
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
         
 
     def __repr__(self):

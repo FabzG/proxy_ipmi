@@ -12,11 +12,13 @@ class RMCPMessage():
             self.rcmp_message_type = self.extract_rcmp_message_type(keys['data'])
             self.rcmp_message_content = self.extract_rcmp_message_content(keys['data'])
         elif len(keys) == 5:
-            self.rcmp_version = self.extract_rcmp_version(keys['rcmp_version'])
-            self.rcmp_reserved = self.extract_rcmp_reserved(keys['rcmp_reserved'])
-            self.rcmp_sequence = self.extract_rcmp_sequence(keys['rcmp_sequence'])
-            self.rcmp_message_type = self.extract_rcmp_message_type(keys['rcmp_message_type'])
-            self.rcmp_message_content = self.extract_rcmp_message_content(keys['rcmp_message_content'])
+            self.rcmp_version = keys['rcmp_version']
+            self.rcmp_reserved = keys['rcmp_reserved']
+            self.rcmp_sequence = keys['rcmp_sequence']
+            self.rcmp_message_type = keys['rcmp_message_type']
+            self.rcmp_message_content = keys['rcmp_message_content']
+        else:
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
 
     def __repr__(self):
         return "------- RCMPMessage -------" \
@@ -47,4 +49,4 @@ class RMCPMessage():
         return data[8:]
 
     def serialize(self):
-        return self.rcmp_version + self.rcmp_reserved + self.rcmp_sequence + self.rcmp_message_type + self.message_content
+        return self.rcmp_version + self.rcmp_reserved + self.rcmp_sequence + self.rcmp_message_type + self.rcmp_message_content

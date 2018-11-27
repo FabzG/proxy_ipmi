@@ -19,5 +19,5 @@
   "tests/test_ipmi.py::test_two_complement_checksum": true,
   "tests/test_ipmi.py::test_two_complement_max": true,
   "tests/test_ipmi.py::test_two_complement_zero": true,
-  "tests/test_ipmi_get_decoder.py": true
+  "tests/test_ipmi_get_decoder.py::test_channel_number_ipmi_version": true
 }

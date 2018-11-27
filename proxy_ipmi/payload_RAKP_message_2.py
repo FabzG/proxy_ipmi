@@ -41,8 +41,8 @@ class PayloadRAKPMessage2():
             self.key_exchange_auth_code = self.calc_hmac_kuid()
             self.SIK = self.calc_hmac_SIK()
         else:
-            AttributeError('No constructor exists for PayloadRAKPMessage2 with ' + len(keys) + " parameters.")
-
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.")
+            
     def __repr__(self):
         return "------- PayloadRAKPMessage2 -------" \
                 + "\nRAKP_message_1_message_tag : " + self.RAKP_message_1_message_tag \

@@ -1,11 +1,11 @@
 from Crypto.Cipher import AES
-#from ipmi_lan_msg import IPMILanMessage
+from payload_ipmi_lan_req_msg import IPMILanRequest
 from ipmi_helper import IPMIHelper
 from hashlib import sha1
 import hmac
 import math
 
-class IPMILanRequestMessage():
+class IPMICipheredLanRequest():
 
     def __init__(self, **keys):#ciphered_msg, ipmi_sik, RCMP_auth_algorithm):
         if len(keys) == 3:
@@ -16,16 +16,17 @@ class IPMILanRequestMessage():
             self.ipmi_k2_short_key = self.extract_ipmi_k2_short_key()
             self.iv = self.extract_iv()
             self.uncipherded_payload = self.decrypt_msg()
-            self.rsAddr = self.extract_rsAddr()
-            self.netFn_rslun  = self.extract_netFn_rslun()
-            self.checksum_rsAdd_netFn_lun = self.extract_checksum_rsAdd_netFn_rsLun()
-            self.validate_checksum_rsAdd_netFn_rsLun()
-            self.rqAddr = self.extract_rqAddr()
-            self.rqSeq_rqLun  = self.extract_rqSeq_rqlun()
-            self.command = self.extract_command()
-            self.command_data = self.extract_command_data()
-            self.checksum_two = self.extract_checksum_two()
-            self.validate_checksum_two()
+            self.ipmi_lan_request_message = IPMILanRequest(rsAddr=self.extract_rsAddr(),
+                                                            netFn=self.extract_netFn(),
+                                                            rsLUN=self.extract_rsLUN(),
+                                                            rqAddr=self.extract_rqAddr(),
+                                                            rqSeq=self.extract_rqSeq(),
+                                                            rqLUN=self.extract_rqLUN(),
+                                                            command=self.extract_command(),
+                                                            request_data=self.extract_command_data()
+                                                            )
+        else:
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
 
     def __repr__(self):
         return "------- IPMILanRequestMessage -------" \
@@ -35,18 +36,18 @@ class IPMILanRequestMessage():
                 + "\nipmi_k2_key : " + self.ipmi_k2_key \
                 + "\nipmi_k2_short_key : " + self.ipmi_k2_short_key \
                 + "\niv : " + self.iv\
-                + "\nrsAddr : " + self.rsAddr \
-                + "\nnetFn_rslun : " + self.netFn_rslun \
-                + "\n  netFn : " + self.extract_netFn() + " human readable : " + IPMIHelper.get_netFn_definition(self.extract_netFn())\
-                + "\n  rslun : " + self.extract_rsLun() \
-                + "\nchecksum_rsAdd_netFn_lun : " + self.checksum_rsAdd_netFn_lun \
-                + "\nrqAddr : " + self.rqAddr \
-                + "\nrqSeq_rqLun : " + self.rqSeq_rqLun \
-                + "\n  rqSeq : " + self.extract_rqSeq() \
-                + "\n  rqLun : " + self.extract_rqLun() \
-                + "\ncommand : " + self.command \
-                + "\ncommand_data : " + self.command_data \
-                + "\nchecksum_two : " + self.checksum_two
+                + "\nrsAddr : " + self.ipmi_lan_request_message.rsAddr \
+                + "\nnetFn_rslun : " + self.ipmi_lan_request_message.hex_netFN_rsLUN() \
+                + "\n  netFn : " + self.ipmi_lan_request_message.netFn + " human readable : " + IPMIHelper.get_netFn_definition(self.ipmi_lan_request_message.netFn)\
+                + "\n  rslun : " + self.ipmi_lan_request_message.rsLUN \
+                + "\nchecksum_one : " + self.ipmi_lan_request_message.checksum1 \
+                + "\nrqAddr : " + self.ipmi_lan_request_message.rqAddr \
+                + "\nrqSeq_rqLun : " + self.ipmi_lan_request_message.hex_rqSeq_rqLUN() \
+                + "\n  rqSeq : " + self.ipmi_lan_request_message.rqSeq \
+                + "\n  rqLun : " + self.ipmi_lan_request_message.rqLUN \
+                + "\ncommand : " + self.ipmi_lan_request_message.command \
+                + "\ncommand_data : " + self.ipmi_lan_request_message.request_data \
+                + "\nchecksum_two : " + self.ipmi_lan_request_message.checksum2
 
 
     def decrypt_msg(self):
@@ -78,33 +79,29 @@ class IPMILanRequestMessage():
     def extract_rqAddr(self):
         return self.uncipherded_payload[6:8]
 
-    def extract_netFn_rslun(self):
-        netFn_lun = self.uncipherded_payload[2:4]
-        return netFn_lun
-
-    def extract_rqSeq_rqlun(self):
-        rqSeq_rqlun = self.uncipherded_payload[8:10]
-        return rqSeq_rqlun
-
     def extract_netFn(self):
-        netFn = IPMIHelper.get_bits(self.netFn_rslun)[2:]
-        netFn.reverse
-        return "".join(netFn)
+        netFn_LUN = self.uncipherded_payload[2:4]
+        bits_netFn_LUN = IPMIHelper.get_bits(netFn_LUN)
 
-    def extract_rsLun(self):
-        lun = IPMIHelper.get_bits(self.netFn_rslun)[0:2]
-        lun.reverse
-        return "".join(lun)
+        return "".join(bits_netFn_LUN[2:])
+
+    def extract_rsLUN(self):
+        netFn_LUN = self.uncipherded_payload[2:4]
+        bits_netFn_LUN = IPMIHelper.get_bits(netFn_LUN)
+
+        return  "".join(bits_netFn_LUN[0:2])
 
     def extract_rqSeq(self):
-        rqSeq = IPMIHelper.get_bits(self.rqSeq_rqLun)[2:]
-        rqSeq.reverse
-        return "".join(rqSeq)
+        rqSeq_rqLUN = self.uncipherded_payload[8:10]
+        bits_rqSeq_rqLUN = IPMIHelper.get_bits(rqSeq_rqLUN)
 
-    def extract_rqLun(self):
-        rqLun = IPMIHelper.get_bits(self.rqSeq_rqLun)[0:2]
-        rqLun.reverse
-        return "".join(rqLun)
+        return "".join(bits_rqSeq_rqLUN[2:])
+
+    def extract_rqLUN(self):
+        rqSeq_rqLUN = self.uncipherded_payload[8:10]
+        bits_rqSeq_rqLUN = IPMIHelper.get_bits(rqSeq_rqLUN)
+
+        return "".join(bits_rqSeq_rqLUN[0:2])
 
     def extract_iv(self):
         print("ipmi_iv : " + str(self.ciphered_msg[0:32]))
@@ -114,9 +111,9 @@ class IPMILanRequestMessage():
         return self.uncipherded_payload[4:6]
 
     def validate_checksum_rsAdd_netFn_rsLun(self):
-        bytes_to_check = self.rsAddr + self.netFn_rslun
+        bytes_to_check = self.ipmi_lan_request_message.rsAddr + self.ipmi_lan_request_message.hex_netFN_rsLUN()
         calculated_checksum = IPMIHelper.two_complement_checksum(bytes_to_check)
-        if calculated_checksum != self.checksum_rsAdd_netFn_lun:
+        if calculated_checksum != self.ipmi_lan_request_message.checksum1:
             raise AssertionError()
             #print("WRONG CHECKSUM !! calc : " + calculated_checksum)
 
@@ -130,8 +127,8 @@ class IPMILanRequestMessage():
         return self.uncipherded_payload[-2:]
 
     def validate_checksum_two(self):
-        bytes_to_check = self.rqAddr + self.rqSeq_rqLun + self.command + self.command_data
+        bytes_to_check = self.ipmi_lan_request_message.rqAddr + self.ipmi_lan_request_message.hex_rqSeq_rqLUN() + self.ipmi_lan_request_message.command + self.ipmi_lan_request_message.command_data
         calculated_checksum = IPMIHelper.two_complement_checksum(bytes_to_check)
-        if calculated_checksum != self.checksum_two:
+        if calculated_checksum != self.ipmi_lan_request_message.checksum2:
             raise AssertionError()
             #print("WRONG CHECKSUM !! calc : " + calculated_checksum)

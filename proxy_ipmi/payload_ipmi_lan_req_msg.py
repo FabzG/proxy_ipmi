@@ -16,19 +16,19 @@ class IPMILanRequest():
             self.rsAddr = keys['rsAddr']
             self.netFn = keys['netFn']
             self.rsLUN = keys['rsLUN']
-            self.checksum1 = IPMIHelper.two_complement_checksum(keys['rsAddr'] \
+            self.checksum1 = IPMIHelper.two_complement_checksum(self.rsAddr \
                                 + self.hex_netFN_rsLUN())
             self.rqAddr = keys['rqAddr']
             self.rqSeq = keys['rqSeq']
             self.rqLUN = keys['rqLUN']
             self.command = keys['command']
             self.request_data = keys['request_data']
-            self.checksum2 = IPMIHelper.two_complement_checksum(keys['rqAddr'] \
+            self.checksum2 = IPMIHelper.two_complement_checksum(self.rqAddr \
                                 + self.hex_rqSeq_rqLUN() \
-                                + keys['command'] \
-                                + keys['request_data'])
+                                + self.command \
+                                + self.request_data)
         else:
-            raise AttributeError("Only 1 and 8 arguments constructor exists for IPMILanRequest class.")
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
   
     def __repr__(self):
         return "------- IPMILanRequest -------" \

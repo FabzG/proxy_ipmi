@@ -25,6 +25,8 @@ class IPMI15SessionWrapper():
             self.message_length = keys['message_length']
             self.message_content = keys['message_content']
             self.trailer = None
+        else:
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
 
     def __repr__(self):
         return "------- IPMISessionWrapper1.5NoAuth -------" \
@@ -37,6 +39,9 @@ class IPMI15SessionWrapper():
                 + "\nmessage_length : " + self.message_length + " human readable : " + str(int(self.message_length, 16))\
                 + "\nmessage_content : " + self.message_content \
                 + "\ntrailer : " + str(self.trailer)
+
+    def serialize(self):
+        return self.ipmi_auth_type + self.ipmi_session_seq + self.ipmi_session_id + self.message_length + self.message_content
 
     @staticmethod
     def extract_ipmi_auth_type(data):

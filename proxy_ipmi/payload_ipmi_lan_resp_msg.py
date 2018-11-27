@@ -31,7 +31,7 @@ class IPMILanResponse():
                                 + self.completion_code \
                                 + self.response_data)
         else:
-            raise AttributeError("Only 1 and 9 arguments constructor exists for IPMILanResponse class.")
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
   
     def __repr__(self):
         return "------- IPMILanResponse -------" \

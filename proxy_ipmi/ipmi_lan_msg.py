@@ -17,6 +17,8 @@ class IPMILanMessage(RMCPMessage):
             self.ipmi_session_id = keys['ipmi_session_id']
             self.ipmi_msg_lenght = keys['ipmi_msg_lenght']
             self.ipmi_remaining_message = keys['ipmi_remaining_message']
+        else:
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
 
 
         def extract_auth_type(self):

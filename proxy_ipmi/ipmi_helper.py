@@ -16,8 +16,8 @@ class IPMIHelper():
         
         return hex_value
 
-    @classmethod
-    def get_auth_type(cls, auth_type_byte):
+    @staticmethod
+    def get_auth_type(auth_type_byte):
         auth_type_bits = IPMIHelper.get_bits(auth_type_byte)
 
         useful_bits = "".join(auth_type_bits[0:4])
@@ -39,6 +39,26 @@ class IPMIHelper():
             return "Format = RMCP+ (IPMI v2.0 only)"
         else:
             return "reserved"
+
+    @staticmethod
+    def get_auth_code(auth_type):
+
+        if auth_type == "none":
+            return '00'
+        elif auth_type == "MD2":
+            return '01'
+        elif auth_type == "MD5":
+            return '02'
+        elif auth_type == "reserved":
+            return '03'
+        elif auth_type == "straight password/key":
+            return '04'
+        elif auth_type == "OEM proprietary":
+            return '05'
+        elif auth_type == "Format = RMCP+ (IPMI v2.0 only)":
+            return '06'
+        else:
+            raise AttributeError("Impossible value for payload encryption bit")
 
     @classmethod
     def get_netFn_definition(cls, netFn_type_byte):
@@ -170,15 +190,15 @@ class IPMIHelper():
 
         hex_value = hex(int_value)[2:]
         
-        payload_type_bits = IPMIHelper.get_bits(hex_value)
-
+        payload_type_bits = "".join(IPMIHelper.get_bits(hex_value)[0:6])
+        '''
         delta_bits_size = 6 - len(payload_type_bits)
 
         if delta_bits_size > 0:
             payload_type_bits = '0'*delta_bits_size + "".join(payload_type_bits)
         else:
             payload_type_bits = '0'*delta_bits_size + "".join(payload_type_bits)
-        
+        '''        
         payload_type_bits = payload_type_bits[::-1]
 
         return payload_type_bits
@@ -315,6 +335,21 @@ class IPMIHelper():
 
         return hex_random
 
+
+    @staticmethod
+    def generate_ipmi_iv():
+        min_value = 0
+        max_value = 16**32
+
+        random_number = random.randrange(min_value, max_value+1)
+
+        hex_random = hex(random_number)[2:]
+
+        if len(hex_random) < 32:
+            hex_random = '0'*(32 - len(hex_random)) + hex_random
+
+        return hex_random
+
     @staticmethod
     def unpad_ipmi_lan_decrypted_msg(message):
         last_two_chars = message[-2:]
@@ -324,7 +359,51 @@ class IPMIHelper():
             message = message[:len(message) - (int(last_two_chars)+1)*2]
 
         return message
+    
+    @staticmethod
+    def pad_aes_ipmi_lan_decrypted_msg(message):
 
+        message_bytes = int(len(message) / 2)
+        bytes_to_pad = 16 - (message_bytes % 16)
+
+        if bytes_to_pad > 0:
+            pad = ''
+            for int_pad in range(1, bytes_to_pad):
+                hex_char = hex(int_pad)[2:]
+                if len(hex_char) < 2:
+                    hex_char = '0' + hex_char
+                
+                pad = pad + hex_char
+        
+        pad = pad + pad[-2:]
+
+        return message + pad
+
+    @staticmethod
+    def calculate_message_length_2_bytes(message):
+        int_length = int(len(message) / 2)
+
+        hex_val = hex(int_length)[2:]
+
+        delta_length = 4 - len(hex_val)
+
+        if delta_length > 0:
+            hex_val = '0'*delta_length + hex_val
+
+        return IPMIHelper.invert_hex(hex_val)
+
+    @staticmethod
+    def calculate_message_length(message):
+        int_length = int(len(message) / 2)
+
+        hex_val = hex(int_length)[2:]
+
+        delta_length = 2 - len(hex_val)
+
+        if delta_length > 0:
+            hex_val = '0'*delta_length + hex_val
+
+        return IPMIHelper.invert_hex(hex_val)
 
     @staticmethod
     def get_requested_maximum_privilege_definition(hex_val):
@@ -523,7 +602,14 @@ class IPMIHelper():
 
         random_number = random.randint(lower_bound, upper_bound)
 
-        return hex(random_number)[2:]
+        hex_random_number = hex(random_number)[2:]
+        
+        delta_size = 32 - len(hex_random_number)
+
+        if delta_size > 0:
+            hex_random_number = '0' * delta_size + hex_random_number
+
+        return hex_random_number
 
 
     @staticmethod
@@ -537,4 +623,11 @@ class IPMIHelper():
 
         random_number = random.randint(lower_bound, upper_bound)
 
-        return hex(random_number)[2:]
+        hex_random_number = hex(random_number)[2:]
+        
+        delta_size = 8 - len(hex_random_number)
+
+        if delta_size > 0:
+            hex_random_number = '0' * delta_size + hex_random_number
+
+        return hex_random_number

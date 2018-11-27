@@ -24,6 +24,8 @@ class PayloadRMCPOpenSessionResponse():
             self.auth_payload = keys['auth_payload']
             self.integrity_payload = keys['integrity_payload']
             self.confidentiality_payload = keys['confidentiality_payload']
+        else:
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
 
     def __repr__(self):
         return "------- PayloadRMCPOpenSessionResponse -------" \

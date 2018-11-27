@@ -28,6 +28,8 @@ class PayloadRAKPMessage4():
             self.RAKP_message_1_managed_system_session_id = keys['RAKP_message_1_managed_system_session_id']
             self.RAKP_message_2_managed_system_GUID = keys['RAKP_message_2_managed_system_GUID']
             self.integrity_check_value = self.calc_integrity_check_value()
+        else:
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
             
 
     def __repr__(self):

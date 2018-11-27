@@ -2,7 +2,7 @@ class IPMIGetDecoder():
 
     @staticmethod
     def parse_channel_auth_capabilities(data): #2018c88110388e03a6
-    
+        pass
 
     @staticmethod
     def get_bits(hex_byte):

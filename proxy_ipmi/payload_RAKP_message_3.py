@@ -16,6 +16,8 @@ class PayloadRAKPMessage3():
             self.reserved = keys['reserved']
             self.managed_system_session_id = keys['managed_system_session_id']
             self.key_exchange_auth_code = keys['key_exchange_auth_code']
+        else:
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
 
     def __repr__(self):
         return "------- PayloadRAKPMessage3 -------" \

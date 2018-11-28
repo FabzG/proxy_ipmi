@@ -2,5 +2,5 @@ projectKey=ipmi
 serverUrl=http://10.42.0.178:9000
 serverVersion=7.4.0.18908
 dashboardUrl=http://10.42.0.178:9000/dashboard?id=ipmi
-ceTaskId=AWdAT4nz2ooPLCj_W4TE
-ceTaskUrl=http://10.42.0.178:9000/api/ce/task?id=AWdAT4nz2ooPLCj_W4TE
+ceTaskId=AWdVxvP62ooPLCj_W4TF
+ceTaskUrl=http://10.42.0.178:9000/api/ce/task?id=AWdVxvP62ooPLCj_W4TF

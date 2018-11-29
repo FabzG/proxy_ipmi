@@ -25,6 +25,23 @@ class IPMICipheredLanRequest():
                                                             command=self.extract_command(),
                                                             request_data=self.extract_command_data()
                                                             )
+        elif len(keys) == 10:
+            self.ipmi_sik = keys['ipmi_sik']
+            self.RCMP_auth_algorithm = keys['RCMP_auth_algorithm']
+            self.ipmi_k2_key = self.generate_ipmi_k2_key()
+            self.ipmi_k2_short_key = self.extract_ipmi_k2_short_key()
+            self.iv = IPMIHelper.generate_ipmi_iv()
+            self.ipmi_lan_request_message = IPMILanRequest(rsAddr=keys['rsAddr'],
+                                                            netFn=keys['netFn'],
+                                                            rsLUN=keys['rsLUN'],
+                                                            rqAddr=keys['rqAddr'],
+                                                            rqSeq=keys['rqSeq'],
+                                                            rqLUN=keys['rqLUN'],
+                                                            command=keys['command'],
+                                                            request_data=keys['request_data']
+                                                            )
+            self.uncipherded_payload = self.ipmi_lan_request_message.serialize()
+            self.ciphered_msg = self.generate_ciphered_message()
         else:
             raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
 
@@ -55,6 +72,15 @@ class IPMICipheredLanRequest():
         aes = AES.new(bytes.fromhex(self.ipmi_k2_short_key), AES.MODE_CBC, bytes.fromhex(self.iv))
         decrypted_msg = aes.decrypt(bytes.fromhex(self.ciphered_msg[32:]))
         return IPMIHelper.unpad_ipmi_lan_decrypted_msg(decrypted_msg.hex())
+
+    def generate_ciphered_message(self):
+
+        padded_message = IPMIHelper.pad_aes_ipmi_lan_decrypted_msg(self.uncipherded_payload)
+        
+        aes = AES.new(bytes.fromhex(self.ipmi_k2_short_key), AES.MODE_CBC, bytes.fromhex(self.iv))
+        encrypted_msg = aes.encrypt(bytes.fromhex(padded_message))
+
+        return self.iv + encrypted_msg.hex()
 
     def generate_ipmi_k2_key(self):
         if self.RCMP_auth_algorithm == 'RAKP-HMAC-SHA1':

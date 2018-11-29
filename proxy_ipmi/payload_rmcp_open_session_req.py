@@ -2,14 +2,26 @@ from ipmi_helper import IPMIHelper
 
 class PayloadRMCPOpenSessionRequest():
 
-    def __init__(self, data):
-        self.message_tag = PayloadRMCPOpenSessionRequest.extract_message_tag(data)
-        self.requested_max_privilege = PayloadRMCPOpenSessionRequest.extract_requested_max_privilege(data)
-        self.reserved = PayloadRMCPOpenSessionRequest.extract_reserved(data)
-        self.remote_console_session_id = PayloadRMCPOpenSessionRequest.extract_remote_console_session_id(data)
-        self.auth_payload = PayloadRMCPOpenSessionRequest.extract_auth_payload(data)
-        self.integrity_payload = PayloadRMCPOpenSessionRequest.extract_integrity_payload(data)
-        self.confidentiality_payload = PayloadRMCPOpenSessionRequest.extract_confidentiality_payload(data)
+    def __init__(self, **keys):
+
+        if len(keys) == 1:
+            self.message_tag = PayloadRMCPOpenSessionRequest.extract_message_tag(keys['data'])
+            self.requested_max_privilege = PayloadRMCPOpenSessionRequest.extract_requested_max_privilege(keys['data'])
+            self.reserved = PayloadRMCPOpenSessionRequest.extract_reserved(keys['data'])
+            self.remote_console_session_id = PayloadRMCPOpenSessionRequest.extract_remote_console_session_id(keys['data'])
+            self.auth_payload = PayloadRMCPOpenSessionRequest.extract_auth_payload(keys['data'])
+            self.integrity_payload = PayloadRMCPOpenSessionRequest.extract_integrity_payload(keys['data'])
+            self.confidentiality_payload = PayloadRMCPOpenSessionRequest.extract_confidentiality_payload(keys['data'])
+        elif len(keys) == 6:
+            self.message_tag = keys['message_tag']
+            self.requested_max_privilege = keys['requested_max_privilege']
+            self.reserved = '0000'
+            self.remote_console_session_id = keys['remote_console_session_id']
+            self.auth_payload = keys['auth_payload']
+            self.integrity_payload = keys['integrity_payload']
+            self.confidentiality_payload = keys['confidentiality_payload']
+        else:
+            raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
 
     def __repr__(self):
         return "------- PayloadRMCPOpenSessionRequest -------" \

@@ -68,7 +68,7 @@ class SessionOrchestrator():
             if ipmi_msg.ipmi_wrapper_type == "IPMI v2.0 NoTrail":
                 #ipmi open session request
                 if IPMIHelper.get_payload_type(ipmi_msg.ipmi_payload_type) == "RMCP+ Open Session Request":
-                    ipmi_msg_content = PayloadRMCPOpenSessionRequest(ipmi_msg.message_content)
+                    ipmi_msg_content = PayloadRMCPOpenSessionRequest(data=ipmi_msg.message_content)
 
                     response_ipmi_msg_content = PayloadRMCPOpenSessionResponse( message_tag=ipmi_msg_content.message_tag, 
                                                                                 rmcp_status_code=IPMIHelper.get_rcmp_status_code_value('No errors'), 
@@ -353,15 +353,21 @@ class SessionOrchestrator():
 
                     return response_rcmp.serialize()
 
+    '''
+    1) Reception demande ipmiV5 -> action : répondre (sans session) --> vrailment un état ??
+    1 bis) Reception d'une demande opensession request --> répondre et créer un objet session
+    2) Réception de RAKP1 --> action : réépondre rakp2, récupérer le mdp (BDD), récupérer la machine réelle (BDD), récupérer son IP (API), faire la demande ipmiv15 (obligatoire??), faire l'opensessionrequest
+    '''
 
 
-    def treat_message(self, message_in):
+
+    def treat_message_cli(self, message_in):
 
         rmcp_message = RMCPMessage(data = message_in)
-
+        
         if rmcp_message.rcmp_message_type == '07': #IPMI
             ipmi_msg = IPMISessionWrapper.get_IPMI_message_instance(rmcp_message.rcmp_message_content)
-
+            '''
             #ipmi v1.5 first comm request
             if ipmi_msg.ipmi_wrapper_type == "IPMI v1.5":
                 ipmi_msg_content = IPMILanRequest(data = ipmi_msg.message_content)
@@ -395,7 +401,7 @@ class SessionOrchestrator():
                 print(response_ipmi)
 
                 return response_rcmp.serialize()
-                
+            '''   
             if ipmi_msg.ipmi_wrapper_type == "IPMI v2.0 NoTrail":
                 #ipmi open session request
                 if IPMIHelper.get_payload_type(ipmi_msg.ipmi_payload_type) == "RMCP+ Open Session Request":

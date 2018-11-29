@@ -42,7 +42,7 @@ class IPMICipheredLanResponse():
                                                             command=keys['command'],
                                                             completion_code=keys['completion_code'],
                                                             response_data=keys['response_data'])
-            self.uncipherded_payload = self.generate_unciphered_message()
+            self.uncipherded_payload = self.ipmi_lan_response_message.serialize()#self.generate_unciphered_message()
             self.ciphered_msg = self.generate_ciphered_message()
         else:
             raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
@@ -72,12 +72,12 @@ class IPMICipheredLanResponse():
 
     def serialize(self):
         return self.ciphered_msg
-
+    '''
     def generate_unciphered_message(self):
         unciphered_message = self.ipmi_lan_response_message.rqAddr + self.ipmi_lan_response_message.hex_netFN_rqLUN() + self.ipmi_lan_response_message.checksum1 + self.ipmi_lan_response_message.rsAddr + self.ipmi_lan_response_message.hex_rqSeq_rsLUN() + self.ipmi_lan_response_message.command + self.ipmi_lan_response_message.completion_code + self.ipmi_lan_response_message.response_data + self.ipmi_lan_response_message.checksum2
     
         return unciphered_message
-
+    '''
     def generate_ciphered_message(self):
 
         padded_message = IPMIHelper.pad_aes_ipmi_lan_decrypted_msg(self.uncipherded_payload)

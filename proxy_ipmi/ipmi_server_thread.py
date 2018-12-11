@@ -16,6 +16,6 @@ class IPMIServerThread(Thread):
                 command = self.command_queue.get()
                 if command[1] != None:
                     self.socket.sendto(bytes.fromhex(command[1]), command[0])
-                print("sent command " + str(command[1]))
+                #print("sent command " + str(command[1] + " to " + str(command[0])))
             
-            time.sleep(1)
+            time.sleep(0.1)

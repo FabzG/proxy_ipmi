@@ -42,6 +42,15 @@ class PayloadRMCPOpenSessionRequest():
                 + "\n  confidentiality_payload_length : " + self.get_confidentiality_payload_length() \
                 + "\n  confidentiality_payload_confidentiality_algo : " + self.get_confidentiality_payload_integrity_algo() + " human readable : " + IPMIHelper.get_confidentiality_algorithm_definition(self.get_confidentiality_payload_integrity_algo()) \
 
+    def serialize(self):
+        return self.message_tag  \
+                + self.requested_max_privilege \
+                + self.reserved \
+                + self.remote_console_session_id \
+                + self.auth_payload \
+                + self.integrity_payload \
+                + self.confidentiality_payload
+
     @staticmethod
     def extract_message_tag(data):
         return data[0:2]

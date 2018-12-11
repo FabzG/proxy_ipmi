@@ -15,12 +15,12 @@ class PayloadRAKPMessage1():
         elif len(keys) == 4:
             self.message_tag = '00'
             self.reserved = '000000'
-            self.managed_system_session_id = PayloadRAKPMessage1.extract_managed_system_session_id(keys['rcmp_open_session_response_managed_system_session_id'])
+            self.managed_system_session_id = keys['rcmp_open_session_response_managed_system_session_id']
             self.remote_console_random_number = IPMIHelper.generate_rakp_remote_console_random_number()
-            self.requested_max_privilege = PayloadRAKPMessage1.extract_requested_max_privilege(keys['requested_max_privilege'])
+            self.requested_max_privilege = keys['requested_max_privilege']
             self.reserved2 = '0000'
-            self.user_name_length = PayloadRAKPMessage1.extract_user_name_length(keys['user_name_length'])
-            self.user_name = PayloadRAKPMessage1.extract_user_name(keys['user_name'])
+            self.user_name_length = keys['user_name_length']
+            self.user_name = keys['user_name']
         else:
             raise ValueError("No constructor with " + str(len(keys)) + " arguments.") 
         
@@ -33,10 +33,20 @@ class PayloadRAKPMessage1():
                 + "\nremote_console_random_number : " + self.remote_console_random_number \
                 + "\nrequested_max_privilege : " + self.requested_max_privilege \
                 + "\n  requested_max_privilege_type : " + self.get_requested_max_privilege_type() \
-                + "\n  requested_max_privilege_level : " + self.get_requested_max_privilege_level() + " human readable : " + IPMIHelper.get_requested_max_privilege_level_definition(self.get_requested_max_privilege_level()) \
+                + "\n  requested_max_privilege_level : " + self.get_requested_max_privilege_level() + " human readable : " + IPMIHelper.get_requested_maximum_privilege_definition(self.get_requested_max_privilege_level()) \
                 + "\nreserved2 : " + self.reserved2 \
                 + "\nuser_name_length : " + self.user_name_length \
                 + "\nuser_name : " + self.user_name + " human readable : " + IPMIHelper.get_username_human_readable(self.user_name)
+
+    def serialize(self):
+        return self.message_tag \
+                + self.reserved \
+                + self.managed_system_session_id \
+                + self.remote_console_random_number \
+                + self.requested_max_privilege \
+                + self.reserved2 \
+                + self.user_name_length \
+                + self.user_name
 
     @staticmethod
     def extract_message_tag(data):

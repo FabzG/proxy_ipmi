@@ -24,6 +24,22 @@ class PayloadRAKPMessage2():
             self.RCMP_auth_algorithm = None
             self.key_exchange_auth_code = PayloadRAKPMessage2.key_exchange_auth_code(keys['data'])
             self.SIK = None
+        if len(keys) == 7:
+            self.RAKP_message_1_message_tag = PayloadRAKPMessage2.extract_message_tag(keys['data'])
+            self.rcmp_status_code = PayloadRAKPMessage2.extract_rcmp_status_code(keys['data'])
+            self.reserved = PayloadRAKPMessage2.extract_reserved(keys['data'])
+            self.RCMP_remote_console_session_id = PayloadRAKPMessage2.extract_remote_console_session_id(keys['data'])
+            self.managed_system_random_number = PayloadRAKPMessage2.extract_managed_system_random_number(keys['data'])
+            self.managed_system_GUID = PayloadRAKPMessage2.extract_managed_system_GUID(keys['data'])
+            self.RAKP_message_1_managed_system_session_id = None
+            self.RAKP_message_1_remote_console_random_number = keys['RAKP_message_1_remote_console_random_number']
+            self.RAKP_message_1_requested_max_privilege = keys['RAKP_message_1_requested_max_privilege']
+            self.RAKP_message_1_user_name_length = keys['RAKP_message_1_user_name_length']
+            self.RAKP_message_1_user_name = keys['RAKP_message_1_user_name']
+            self.associated_user_password = keys['associated_user_password']
+            self.RCMP_auth_algorithm = keys['RCMP_auth_algorithm']
+            self.key_exchange_auth_code = PayloadRAKPMessage2.key_exchange_auth_code(keys['data'])
+            self.SIK = self.calc_hmac_SIK()
         elif len(keys) == 10:
             self.RAKP_message_1_message_tag = keys['RAKP_message_1_message_tag']
             self.rcmp_status_code = keys['rcmp_status_code']

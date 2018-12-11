@@ -11,7 +11,11 @@ class IPMIThread(Thread):
         self.commands_to_run = commands_to_run
 
     def run(self):
-        resp = self.orchestrator.treat_message(self.msg.hex())
-        resp_msg = [self.ip, resp]
-        print("in thresad" + str(resp_msg[0]) + str(resp_msg[1]))
-        self.commands_to_run.put(resp_msg)
+        resp = self.orchestrator.treat_message(self.msg.hex(), self.ip)
+
+        if resp and len(resp) > 0:
+            for response in resp:
+                print("Put message : " + str(response[0]) + str(response[1]))
+                self.commands_to_run.put(response)
+        else:
+            print("No message to put in queue : session stored")

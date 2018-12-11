@@ -4,6 +4,39 @@ import uuid
 
 class IPMIHelper():
 
+    '''
+    @staticmethod
+    def is_request(rcmp_ipmi_message):
+
+        aes = AES.new(bytes.fromhex(self.ipmi_k2_short_key), AES.MODE_CBC, bytes.fromhex(self.iv))
+        decrypted_msg = aes.decrypt(bytes.fromhex(self.ciphered_msg[32:]))
+        return IPMIHelper.unpad_ipmi_lan_decrypted_msg(decrypted_msg.hex())
+
+        netfn_byte = rcmp_ipmi_message[]
+    '''
+    @staticmethod
+    def guess_ipmi_message_type(data):
+
+        if isinstance(data, dict):
+            try:
+                net_fn = keys['netFn']
+                if net_fn[0] == '0':
+                    return "Response"
+                else:
+                    return "Request"
+            except:
+                raise AttributeError('Parametrized construction of IMPI message without netFn value.')
+        else:
+            try:
+                net_fn_byte = data[2:4]
+                net_fn = IPMIHelper.get_bits(net_fn_byte)
+                if net_fn[2] == '0':
+                    return "Request"
+                else:
+                    return "Response"
+            except:
+                raise AttributeError('Data construction of IMPI message without netFn value.')
+
     @classmethod
     def hexify_binary_string(cls, *args):
         args = "".join(args)
@@ -380,6 +413,19 @@ class IPMIHelper():
         return message + pad
 
     @staticmethod
+    def calculate_string_length_1_byte_hex(message):
+        int_length = int(len(message))
+
+        hex_val = hex(int_length)[2:]
+
+        delta_length = 2 - len(hex_val)
+
+        if delta_length > 0:
+            hex_val = '0'*delta_length + hex_val
+
+        return IPMIHelper.invert_hex(hex_val)
+
+    @staticmethod
     def calculate_message_length_2_bytes(message):
         int_length = int(len(message) / 2)
 
@@ -408,12 +454,12 @@ class IPMIHelper():
     @staticmethod
     def get_requested_maximum_privilege_definition(hex_val):
         maximum_privileges = {
-            '00' :'Highest level matching proposed algorithms',
-            '01' : 'CALLBACK level',
-            '02' : 'USER level',
-            '03' : 'OPERATOR level',
-            '04' : 'ADMINISTRATOR level',
-            '05' : 'OEM Proprietary level'
+            '10' :'Highest level matching proposed algorithms',
+            '11' : 'CALLBACK level',
+            '12' : 'USER level',
+            '13' : 'OPERATOR level',
+            '14' : 'ADMINISTRATOR level',
+            '15' : 'OEM Proprietary level'
         }
 
         try:
@@ -514,7 +560,7 @@ class IPMIHelper():
         hex_val = hex(int_val)[2:]
 
         if len(hex_val) < 2:
-            hex_val = '0'+hex_val
+            hex_val = '1'+hex_val
 
         return hex_val
 
@@ -523,6 +569,12 @@ class IPMIHelper():
         str_val = bytes.fromhex(hex_val).decode("utf8")
 
         return str_val
+
+    @staticmethod
+    def get_username_hex(string_val):
+        hex_val = string_val.encode("utf8").hex()
+
+        return hex_val
 
     @staticmethod
     def get_message_length(message):

@@ -16,9 +16,9 @@ client = ovh.Client(
 )
 
 result_ipmi_ip_request = client.post('/dedicated/server/'+machine_name+'/features/ipmi/access', 
-    ttl='1', # Required: Session access time to live in minutes (type: dedicated.server.CacheTTLEnum),
+    ttl='15', # Required: Session access time to live in minutes (type: dedicated.server.CacheTTLEnum),
     type= "kvmipJnlp",#  Required: IPMI console access (type: dedicated.server.IpmiAccessTypeEnum)
-    ipToAllow='52.48.114.241',
+    ipToAllow='80.215.78.25',
 )
 
 result_task = client.get('/dedicated/server/'+machine_name+'/task/' + str(result_ipmi_ip_request["taskId"]))

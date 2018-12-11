@@ -24,8 +24,7 @@ while True:
 
     
     #print("I got the client's address as: ", clientaddress)
-    print("I got the message")
-    print(message.hex())
+    #print("I got the message " + message.hex() + " from " + str(clientaddress))
     
     tread = IPMIThread(message, orchestrator, clientaddress, commands_to_run)
     tread.start()
